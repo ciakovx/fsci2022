@@ -24,11 +24,11 @@ email_domain <- "enter your institution's email domain"
 organization_name <- "enter your organization's name"
 
 # example
-# ringgold_id <- "7618"
-# grid_id <- "grid.65519.3e"
-# email_domain <- "@okstate.edu"
-# ror_id <- "https://ror.org/01g9vbr38"
-# organization_name <- "Oklahoma State University"
+ringgold_id <- "7618"
+grid_id <- "grid.65519.3e"
+email_domain <- "@okstate.edu"
+ror_id <- "https://ror.org/01g9vbr38"
+organization_name <- "Oklahoma State University"
 
 # create the query
 my_query <- glue('ringgold-org-id:',
@@ -111,7 +111,7 @@ my_organizations_filtered <- my_organizations %>%
 
 # filter the dataset to include only the institutions you want. 
 # As you can see in the below example, there may be messiness in the hand-entered ones
-# See example:
+# Here is an example:
 my_employment_data_filtered <- my_employment_data %>%
   dplyr::filter(organization_name == "Oklahoma State University Stillwater"
                 | organization_name == "Oklahoma State University Tulsa"

@@ -23,7 +23,7 @@ orcid_cr <- read_csv("./data/results/orcid_cr_merge.csv",
                            col_types = cols(.default = "c"))
 
 # paste in your sherpa romeo API key
-sherpa_key <- "E469935C-5123-11EC-BAE9-AE9E39561B01"
+sherpa_key <- "PASTE YOUR SHERPA ROMEO KEY HERE"
 
 # create safe version of GET 
 safeget <- safely(GET)
