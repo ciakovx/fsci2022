@@ -5,7 +5,10 @@
 install.packages('dplyr')
 install.packages('tibble')
 install.packages('tidyr')
+install.packages('purrr')
 install.packages('readr')
+install.packages('jsonlite')
+install.packages('lubridate')
 install.packages('ggplot2')
 install.packages('forcats')
 install.packages('rorcid')
@@ -18,9 +21,12 @@ install.packages('remotes')
 remotes::install_github("ropensci/rcrossref")
 install.packages('roadoi')
 install.packages('inops')
+install.packages('listviewer')
+
 
 # load the packages
 library(dplyr)
+library(httr)
 library(tibble)
 library(tidyr)
 library(readr)
@@ -62,22 +68,28 @@ orcid_request <- POST(url  = "https://orcid.org/oauth/token",
                                   client_secret = orcid_client_secret),
                       encode = "form")
 
+# parse the API request with content
 orcid_response <- content(orcid_request)
 
-# run this code. You will see a string of text print out in your R console.
-# Copy that string to the keyboard for use below
+# run the following code
 print(orcid_response$access_token)
+#You will see a string of text print out in your R console.
+# Copy that string to the keyboard for use below
 
-# now we are going to save the token to our R environment. Run this code:
+# now we are going to save the token to our R environment
+# Run this code:
 usethis::edit_r_environ()
 
-# In this separate R environment page, type ORCID_TOKEN="my-token", replacing 'my-token' with the access_token you just copied. 
+# A new window will open in RStudio.
+# In this separate R environment page, type the following (except the pound sign):
+# ORCID_TOKEN="my-token"
+# replace 'my-token' with the access_token you just copied. 
 # Then press enter to create a new line, and leave it blank. 
-# Press Ctrl + S (Mac: Cmd + S to save the API key to your R environment and close the window. 
+# Press Ctrl + S to save the token (Mac: Cmd + S) to save the API key to your R environment and close the window. You won't see anything happen here because it is just saving the page.
 # Click Session > Restart R. Your token should now be saved to your R environment. 
 
 #You can confirm this by calling orcid_auth(), and it will print the token
-orcid_auth()
+rorcid::orcid_auth()
 
 
 # configure rcrossref -----------------------------------------------------
@@ -92,3 +104,21 @@ usethis::edit_r_environ()
 
 # 1. Create an account with Sherpa-Romeo at https://v2.sherpa.ac.uk/cgi/register
 # 2. Click the Admin button. Your API key will be displayed. We will use this in 06
+
+
+# find your institution's identifiers -------------------------------------
+
+# Sign in to your ORCID account and scroll down to Employment. Click the Add button.
+# Start typing your institution. When it appears, click it. Click Save changes.
+# On your orcid profile, click Show more detail. Your institution’s Ringgold ID will be displayed. 
+# You can also look it up in the Ringgold database but you must register to use this service.
+
+
+
+
+
+
+
+
+
+

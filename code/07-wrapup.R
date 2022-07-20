@@ -17,7 +17,6 @@ library(roadoi)
 library(inops)
 library(tidyr)
 library(tibble)
-library(gt)
 
 orcid_cr_sherpa <- read_csv("./data/results/orcid_cr_sherpa.csv")
 

@@ -1,4 +1,3 @@
-
 # load the packages
 library(rorcid)
 library(httr)
@@ -19,29 +18,32 @@ library(tidyr)
 # build the query  --------------------------------------------------------
 
 ringgold_id <- "enter your institution's ringgold" 
-grid_id <- "enter your institution's grid ID" 
 email_domain <- "enter your institution's email domain" 
 organization_name <- "enter your organization's name"
+# grid_id <- "enter your institution's grid ID" 
+# ror_id <- "enter your institution's ROR ID"
+
 
 # example
 ringgold_id <- "7618"
-grid_id <- "grid.65519.3e"
 email_domain <- "@okstate.edu"
-ror_id <- "https://ror.org/01g9vbr38"
 organization_name <- "Oklahoma State University"
+# grid_id <- "grid.65519.3e"
+# ror_id <- "https://ror.org/01g9vbr38"
+
 
 # create the query
 my_query <- glue('ringgold-org-id:',
                  ringgold_id,
-                 ' OR grid-org-id:',
-                 grid_id,
-                 ' OR ror-org-id:"',
-                 ror_id,
                  '" OR email:*',
                  email_domain,
                  ' OR affiliation-org-name:"',
                  organization_name,
                  '"')
+
+# here is the query you will use if you found your
+# institution's GRID and ROR IDs.
+# my_query <- glue('ringgold-org-id:', ringgold_id, ' OR grid-org-id:', grid_id, ' OR ror-org-id:"', ror_id, '" OR email:*', email_domain, ' OR affiliation-org-name:"', organization_name, '"')
 
 # examine my_query
 my_query
@@ -77,13 +79,16 @@ my_orcids_data <- my_orcids %>%
 # be patient, this may take a while
 my_employment <- rorcid::orcid_employments(my_orcids_data$orcid_identifier_path)
 
+# View it
+View(my_employment)
+
 # you can write the file to json if you want to work with it outside of R
 write_json(my_employment, "./data/processed/employment.json")
 
 # here is how you would read it back in, if necessary
 # my_employment <- read_json("./data/processed/employment.json", simplifyVector = TRUE)
 
-# extract the employment data from the JSON file and mutate the dates
+# extract the employment data and mutate the dates
 my_employment_data <- my_employment %>%
   purrr::map(., purrr::pluck, "affiliation-group", "summaries") %>% 
   purrr::flatten_dfr() %>%
@@ -91,6 +96,9 @@ my_employment_data <- my_employment %>%
   dplyr::mutate(employment_summary_end_date = anytime::anydate(employment_summary_end_date/1000),
                 employment_summary_created_date_value = anytime::anydate(employment_summary_created_date_value/1000),
                 employment_summary_last_modified_date_value = anytime::anydate(employment_summary_last_modified_date_value/1000))
+
+# View it
+View(my_employment_data)
 
 # clean up the column names
 names(my_employment_data) <- names(my_employment_data) %>%
