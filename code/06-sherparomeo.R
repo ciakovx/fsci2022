@@ -1,28 +1,36 @@
-library(rorcid)
-library(httr)
-library(usethis)
-library(anytime)
-library(lubridate)
-library(janitor)
-library(glue)
+# load the required packages
 library(dplyr)
+library(tibble)
+library(tidyr)
 library(purrr)
-library(stringr)
 library(readr)
 library(jsonlite)
+library(lubridate)
 library(ggplot2)
+library(httr)
 library(forcats)
+library(usethis)
+library(anytime)
+library(janitor)
+library(glue)
+library(rorcid)
 library(rcrossref)
 library(roadoi)
 library(inops)
-library(tidyr)
-library(tibble)
+
+
+# remove all objects from the environment
+# to start with a clean slate
+rm(list = ls())
 
 # read in the crossref/orcid merge data
 orcid_cr <- read_csv("./data/results/orcid_cr_merge.csv",
                            col_types = cols(.default = "c"))
 
 # paste in your sherpa romeo API key
+# you can obtain this after creating an account,
+# logging in, and clicking the Admin tab at 
+# https://v2.sherpa.ac.uk/cgi/users/home
 sherpa_key <- "PASTE YOUR SHERPA ROMEO KEY HERE"
 
 # create safe version of GET 
@@ -42,8 +50,13 @@ api_url <- paste0("https://v2.sherpa.ac.uk/cgi/retrieve?item-type=publication&fo
                   "api-key=",
                   sherpa_key)
 
+###################################################
+## When you run this on your own after the class,##
+############### REMOVE THE [1:10] #################
+###################################################
+# We need to limit this because it takes a long time to get this data
 # send the request
-romeo_request <- map(api_url, function(z) {
+romeo_request <- map(api_url[1:10], function(z) {
   print(z)
   o <- safeget(z)
   return(o)

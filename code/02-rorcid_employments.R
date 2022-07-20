@@ -1,19 +1,22 @@
 # load the packages
-library(rorcid)
-library(httr)
-library(usethis)
-library(anytime)
-library(lubridate)
-library(janitor)
-library(glue)
 library(dplyr)
+library(tibble)
+library(tidyr)
 library(purrr)
-library(stringr)
 library(readr)
 library(jsonlite)
+library(lubridate)
 library(ggplot2)
+library(httr)
 library(forcats)
-library(tidyr)
+library(usethis)
+library(anytime)
+library(janitor)
+library(glue)
+library(rorcid)
+library(rcrossref)
+library(roadoi)
+library(inops)
 
 # build the query  --------------------------------------------------------
 
@@ -78,9 +81,11 @@ my_orcids_data <- my_orcids %>%
 # get the employments from the orcid_identifier_path column
 
 # for the purposes of this class, we will only be retrieving data for the first 15 people.
-# When you run this on your own after the class,
-##### REMOVE THE [1:20] ####
 
+###################################################
+## When you run this on your own after the class,##
+############### REMOVE THE [1:20] #################
+###################################################
 
 # be patient, this may take a while
 my_employment <- rorcid::orcid_employments(my_orcids_data$orcid_identifier_path[1:50])

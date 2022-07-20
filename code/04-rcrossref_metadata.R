@@ -1,19 +1,22 @@
-library(rorcid)
-library(httr)
-library(usethis)
-library(anytime)
-library(lubridate)
-library(janitor)
-library(glue)
+# load the required packages
 library(dplyr)
+library(tibble)
+library(tidyr)
 library(purrr)
-library(stringr)
 library(readr)
 library(jsonlite)
+library(lubridate)
 library(ggplot2)
+library(httr)
 library(forcats)
+library(usethis)
+library(anytime)
+library(janitor)
+library(glue)
+library(rorcid)
 library(rcrossref)
-library(tidyr)
+library(roadoi)
+library(inops)
 
 
 # remove all objects from the environment
@@ -60,16 +63,6 @@ metadata_2021_df <- metadata_2021 %>%
   clean_names() %>%
   filter(!duplicated(doi))
 
-linklist <- metadata_2021_df %>%
-  unnest(link) %>%
-  filter(content.type == "application/pdf" | content.type == "unspecified",
-         !duplicated(doi)) %>%
-  select(doi, URL) %>%
-  rename(pdf_url = URL)
-
-metadata_2021_df <- metadata_2021_df %>%
-  left_join(linklist, by = "doi")
-
 # We next want to prepare our orcid data frame to merge to the crossref data by selecting only the relevant columns
 orcid_merge <- dois_2021 %>%
   select(orcid_identifier, doi, given_name, family_name)
@@ -77,12 +70,30 @@ orcid_merge <- dois_2021 %>%
 # Have a look at the names of the columns to see which ones we might want to keep
 View(as.data.frame(names(metadata_2021_df)))
 
-# 
+# select relevant columns
 cr_merge <- metadata_2021_df %>%
-  select(doi, title, published_print, published_online, issued, 
-         container_title, issn, volume, issue, page,
-         publisher, language, isbn, url, type, subject, reference_count, is_referenced_by_count,
-         subject, alternative_id, author, pdf_url)
+  select(any_of("doi",
+                "title",
+                "published_print", 
+                "published_online", 
+                "issued", 
+                "container_title",
+                "issn",
+                "volume",
+                "issue",
+                "page",
+                "publisher",
+                "language",
+                "isbn",
+                "url",
+                "type",
+                "subject",
+                "reference_count",
+                "is_referenced_by_count",
+                "subject",
+                "alternative_id",
+                "author",
+                "pdf_url")
 
 # The authors are in a nested list. In order to collect them into a single value, we must
 # unnest the list,
@@ -125,8 +136,4 @@ top_journals <- orcid_cr_merge %>%
   group_by(container_title) %>%
   tally() %>%
   arrange(desc(n))
-
-
-# z <- cr_works(flq = c(query.bibliographic = "Iakovakis Macken Privacy"), limit = 1)
-
 

@@ -1,21 +1,28 @@
-library(rorcid)
-library(httr)
-library(usethis)
-library(anytime)
-library(lubridate)
-library(janitor)
-library(glue)
+# load the required packages
 library(dplyr)
+library(tibble)
+library(tidyr)
 library(purrr)
-library(stringr)
 library(readr)
 library(jsonlite)
+library(lubridate)
 library(ggplot2)
+library(httr)
 library(forcats)
+library(usethis)
+library(anytime)
+library(janitor)
+library(glue)
+library(rorcid)
 library(rcrossref)
 library(roadoi)
 library(inops)
-library(fulltext)
+
+
+# remove all objects from the environment
+# to start with a clean slate
+rm(list = ls())
+
 
 # read in the crossref/orcid merge data
 orcid_cr_merge <- read_csv("./data/results/orcid_cr_merge.csv",
@@ -32,7 +39,8 @@ dois_oa <- map(orcid_cr_merge$doi, function(z) {
   Sys.sleep(0.5)
 })
 
-write_json(dois_oa, "./data/processed/dois_oa.json")
+# write the json, if necessary
+# write_json(dois_oa, "./data/processed/dois_oa.json")
 
 # read in the json if necessary
 # dois_oa2 <- read_json("./data/processed/dois_oa.json", simplifyVector = TRUE)
@@ -53,8 +61,10 @@ dois_oa_df <- dois_oa %>%
   map_dfr(., flatten) %>%
   clean_names() 
 
+# View the data
+View(dois_oa_df)
 
-
+# have a look at the column names
 View(as.data.frame(names(dois_oa_df)))
 
 # have a look at how many of the results have an open access version available
@@ -64,21 +74,23 @@ tabyl(dois_oa_df$is_oa)
 oa_only <- dois_oa_df %>%
   filter(is_oa == TRUE)
 
+# of these, have a look at the best location
 best_oa <- oa_only %>%
   tidyr::unnest(best_oa_location)
 
-# because you can't write nested lists to CSV, you must either unnest them or remove them.
-# We join this 
-
-
+# because you can't write nested lists to CSV, you must either unnest them or remove them. In this case, we remove them.
+# But if you really want to explore this data, you'll want to unnest them
+# here in RStudio
 best_oa_merge <- best_oa %>%
   filter(!duplicated(doi)) %>%
   select_if(purrr::negate(is.list))
 
+# now that we have the best OA location, we can merge this back to our ORCID/Crossref file
 orcid_cr_oa_merge <- orcid_cr_merge %>%
   left_join(best_oa_merge, by = "doi", suffix = c("_cr", "_oa")) %>%
   rename(title = title_cr)
 
+# write the csv
 write_csv(orcid_cr_oa_merge, "./data/results/orcid_cr_oa_merge.csv")  
 
 

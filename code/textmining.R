@@ -22,6 +22,18 @@ library(inops)
 orcid_cr_oa <- read_csv("./data/results/orcid_cr_oa_merge.csv") %>%
   mutate(filename = make_clean_names(paste(str_sub(family_name, 1, 5), str_sub(title, 1, 5), sep = "_")))
 
+
+# linklist <- metadata_2021_df %>%
+#   unnest(link) %>%
+#   filter(content.type == "application/pdf" | content.type == "unspecified",
+#          !duplicated(doi)) %>%
+#   select(doi, URL) %>%
+#   rename(pdf_url = URL)
+# 
+# metadata_2021_df <- metadata_2021_df %>%
+#   left_join(linklist, by = "doi")
+
+
 # wrap GET in safely in order to keep a failed search from terminating the loop
 safeget <- safely(GET)
 
