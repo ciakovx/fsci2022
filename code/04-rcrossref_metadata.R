@@ -15,7 +15,12 @@ library(forcats)
 library(rcrossref)
 library(tidyr)
 
-dois_unduped <- read_csv("./data/processed/orcid_dois.csv")
+
+# remove all objects from the environment
+# to start with a clean slate
+rm(list = ls())
+
+dois_unduped <- read_csv("./data/results/orcid_dois.csv")
 
 # We start by subsetting our unduped dois to include only the year 2021.
 # I had 11,000 DOIs and that's just too many to do all at once. 
@@ -34,11 +39,11 @@ metadata_2021 <- map(dois_2021$doi, function(z) {
   print(z)
   o <- cr_works(dois = z)
   return(o)
-  Sys.sleep(0.5)
+  Sys.sleep(2)
 })
 
-# go ahead and write the json file to disk so you have it
-write_json(metadata_2021, "./data/processed/metadata_2021.json")
+# optional:  write the json file to disk so you have it
+# write_json(metadata_2021, "./data/processed/metadata_2021.json")
 
 # read json, if necessary
 # metadata_2021_df <- read_json("./data/processed/metadata_2021.json", simplifyVector = TRUE) %>%

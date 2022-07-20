@@ -213,7 +213,11 @@ orcid_person_employment_join <- my_orcid_person_data %>%
 write_csv(orcid_person_employment_join, "./data/results/orcid_employment_file.csv")
 
 
-
+#
+# if you are a part of an ORCID member institution, 
+# you can get this data more easily from the member portal
+# at https://member-portal.orcid.org/ and it's quite comparable
+#
 
 # exploring departments ---------------------------------------------------
 
@@ -238,5 +242,6 @@ dept_plot <- dept_tally %>%
   coord_flip()
 
 print(dept_plot)
+
 
 

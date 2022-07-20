@@ -14,20 +14,27 @@ library(ggplot2)
 library(forcats)
 library(rcrossref)
 
+# remove all objects from the environment
+# to start with a clean slate
+rm(list = ls())
+
 # Read in the orcid person data we collected in 02-rorcid_employments
-orcid_ids <- read_csv("./data/results/orcid_employment_file.csv")
+orcid_ids <- read_csv("./data/results/orcid_employment_file.csv",
+                      col_types = cols(.default = "c"))
 
 # create a vector of unique, unduplicated ORCID IDs from that file
 my_orcids <- orcid_ids %>%
   filter(!duplicated(orcid_identifier_path)) %>%
   pull(orcid_identifier_path) %>%
-  na.omit()
+  na.omit() %>%
+  as.character()
 
 # Call the orcid_works function to collect all works associated with each ID
+# This may take a few seconds up to a few minutes
 my_works <- rorcid::orcid_works(my_orcids)
 
-# write this file to json
-write_json(my_works, "./data/raw/my_works.json")
+# optional: write this file to json
+# write_json(my_works, "./data/raw/my_works.json")
 
 # if necessary, read the file from json
 ## my_works <- read_json("./data/raw/my_works.json", simplifyVector = TRUE)
@@ -92,7 +99,7 @@ dois_unduped <- dois %>%
   filter(!duplicated(orcid_doi)) %>%
   left_join(orcid_empl_merge, by = "orcid_identifier")
 
-write_csv(dois_unduped, "./data/processed/orcid_dois.csv")
+write_csv(dois_unduped, "./data/results/orcid_dois.csv")
 
 # look at variation betw 10.4324/9781315681689-6 and 10.4324/9781315681689 as good example
 
