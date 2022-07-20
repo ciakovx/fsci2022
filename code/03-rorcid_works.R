@@ -15,7 +15,7 @@ library(forcats)
 library(rcrossref)
 
 # Read in the orcid person data we collected in 02-rorcid_employments
-orcid_ids <- read_csv("./data/orcid_employment_file.csv")
+orcid_ids <- read_csv("./data/processed/orcid_employment_file.csv")
 
 # create a vector of unique, unduplicated ORCID IDs from that file
 my_orcids <- orcid_ids %>%
