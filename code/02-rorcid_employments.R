@@ -210,7 +210,7 @@ orcid_person_employment_join <- my_orcid_person_data %>%
   left_join(current_employment_all, by = c("orcid_identifier_path" = "orcid_identifier"))
 
 # now you can write this file to a CSV
-write_csv(orcid_person_employment_join, "./data/processed/orcid_employment_file.csv")
+write_csv(orcid_person_employment_join, "./data/results/orcid_employment_file.csv")
 
 
 
