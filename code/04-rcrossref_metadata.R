@@ -31,7 +31,12 @@ dois_unduped <- read_csv("./data/results/orcid_dois.csv")
 dois_2021 <- dois_unduped %>%
   filter(publication_date_year_value >= 2021)
 
-
+# we wrap the cr_works in slowly and put a delay of 2 seconds after each call
+# normally you don't need to do this, but since everyone in the class will be
+# using it at once, we'll use it during the class.
+# When you're done with the class, you can just call cr_works in the loop below
+# rather than slow_cr_works
+slow_cr_works <- slowly(cr_works, rate_delay(2))
 
 # This will loop through the column of dois and perform a function that
 # prints the doi (this allows you to ensure it's progressing)
@@ -40,7 +45,7 @@ dois_2021 <- dois_unduped %>%
 # pause the system for 0.5 seconds
 metadata_2021 <- map(dois_2021$doi, function(z) {
   print(z)
-  o <- cr_works(dois = z)
+  o <- slow_cr_works(dois = z)
   return(o)
   Sys.sleep(2)
 })
@@ -72,7 +77,7 @@ View(as.data.frame(names(metadata_2021_df)))
 
 # select relevant columns
 cr_merge <- metadata_2021_df %>%
-  select(any_of("doi",
+  select(any_of(c("doi",
                 "title",
                 "published_print", 
                 "published_online", 
@@ -93,7 +98,7 @@ cr_merge <- metadata_2021_df %>%
                 "subject",
                 "alternative_id",
                 "author",
-                "pdf_url")
+                "pdf_url")))
 
 # The authors are in a nested list. In order to collect them into a single value, we must
 # unnest the list,

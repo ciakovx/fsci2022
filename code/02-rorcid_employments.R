@@ -80,7 +80,7 @@ my_orcids_data <- my_orcids %>%
 
 # get the employments from the orcid_identifier_path column
 
-# for the purposes of this class, we will only be retrieving data for the first 15 people.
+# for the purposes of this class, we will only be retrieving data for the first 20 people.
 
 ###################################################
 ## When you run this on your own after the class,##

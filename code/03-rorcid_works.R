@@ -103,7 +103,5 @@ dois_unduped <- dois %>%
   filter(!duplicated(orcid_doi)) %>%
   left_join(orcid_empl_merge, by = "orcid_identifier")
 
+# write the csv
 write_csv(dois_unduped, "./data/results/orcid_dois.csv")
-
-# look at variation betw 10.4324/9781315681689-6 and 10.4324/9781315681689 as good example
-

@@ -31,12 +31,19 @@ orcid_cr_merge <- read_csv("./data/results/orcid_cr_merge.csv",
 # input your email address to send with your unpaywall api requests
 my_email <- "TYPE YOUR EMAIL ADDRESS HERE"
 
+# create a slow oadoi_fetch call to be used during this class
+slow_oadoi_fetch <- slowly(oadoi_fetch, rate_delay(2))
+
+###################################################
+## When you run this on your own after the class,##
+############### REMOVE THE [1:20] #################
+###################################################
+
 # loop through the dois, calling oadoi_fetch and returning the results
-dois_oa <- map(orcid_cr_merge$doi, function(z) {
+dois_oa <- map(orcid_cr_merge$doi[1:20], function(z) {
   print(z)
-  o <- roadoi::oadoi_fetch(dois = z, email = my_email)
+  o <- slow_oadoi_fetch(dois = z, email = my_email)
   return(o)
-  Sys.sleep(0.5)
 })
 
 # write the json, if necessary
@@ -53,7 +60,9 @@ warnings()
 # is_empty will return a TRUE or FALSE if there were no results, and the _lgl
 # part of map will return that TRUE or FALSE into a single vector, which can be used 
 # to subset the crossref/orcid merge
-dois_not_found <- orcid_cr_merge[map_lgl(dois_oa, is_empty), ]
+### AGAIN, DELETE THE [1:20, ] WHEN YOU ARE RUNNING THIS AFTER CLASS ###
+dois_not_found <- orcid_cr_merge[1:20, ] %>%
+  filter(!map_lgl(dois_oa, is_empty))
 
 # loop through (map) the returned results, extract (flatten) the 
 # data frame, and bind (_dfr) the rows together
