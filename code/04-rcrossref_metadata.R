@@ -4,6 +4,7 @@ library(tibble)
 library(tidyr)
 library(purrr)
 library(readr)
+library(stringr)
 library(jsonlite)
 library(lubridate)
 library(ggplot2)
@@ -47,7 +48,6 @@ metadata_2021 <- map(dois_2021$doi, function(z) {
   print(z)
   o <- slow_cr_works(dois = z)
   return(o)
-  Sys.sleep(2)
 })
 
 # optional:  write the json file to disk so you have it
@@ -74,6 +74,18 @@ orcid_merge <- dois_2021 %>%
 
 # Have a look at the names of the columns to see which ones we might want to keep
 View(as.data.frame(names(metadata_2021_df)))
+
+# unnest the link list, keep the links for application/pdf
+# this will be used if you choose to do text mining after the class
+linklist <- metadata_2021_df %>%
+  unnest(link) %>%
+  filter(content.type == "application/pdf" | content.type == "unspecified",
+         !duplicated(doi)) %>%
+  select(doi, URL) %>%
+  rename(pdf_url = URL)
+
+metadata_2021_df <- metadata_2021_df %>%
+  left_join(linklist, by = "doi")
 
 # select relevant columns
 cr_merge <- metadata_2021_df %>%
@@ -123,6 +135,11 @@ cr_merge <- cr_merge %>%
 
 
 # now merge to the orcid file
+# also there were some items that had two ISSNs separated by a comma
+# we separate those into two columns with separate()
+# you might get a warning here, but it's fine
+# it's just telling you that there were some rows where only one 
+# issn existed, so it was unable to separate it into issn1 and issn2
 orcid_cr_merge <- orcid_merge %>%
   left_join(cr_merge, by = "doi") %>%
   select(orcid_identifier, doi, given_name, family_name, all_auths, everything()) %>%
@@ -136,9 +153,24 @@ write_csv(orcid_cr_merge, "./data/results/orcid_cr_merge.csv")
 
 # looking at the data -----------------------------------------------------
 
+# create a table looking at the number of articles per journal
 top_journals <- orcid_cr_merge %>%
   filter(!is.na(container_title)) %>%
   group_by(container_title) %>%
   tally() %>%
   arrange(desc(n))
+
+# sort by top cited
+top_cited <- orcid_cr_merge %>%
+  mutate(is_referenced_by_count = as.integer(is_referenced_by_count)) %>%
+  arrange(desc(is_referenced_by_count))
+
+# line plot of publication date (issued)
+issued_plot <- orcid_cr_merge %>%
+  mutate(issued_fix = str_sub(issued, start = 1, end = 7),
+         issued_fix = ym(issued_fix)) %>%
+  count(issued_fix) %>%
+  ggplot(aes(x = issued_fix, y = n)) + 
+  geom_line()
+print(issued_plot)
 

@@ -19,40 +19,31 @@ library(inops)
 # read in the crossref/orcid/unpaywall data and create a new 
 # variable filename that is the first five characters of the author's last name
 # and the first five characters of the title
-orcid_cr_oa <- read_csv("./data/results/orcid_cr_oa_merge.csv") %>%
+orcid_cr <- read_csv("./data/results/orcid_cr_merge.csv") %>%
   mutate(filename = make_clean_names(paste(str_sub(family_name, 1, 5), str_sub(title, 1, 5), sep = "_")))
 
 
-# linklist <- metadata_2021_df %>%
-#   unnest(link) %>%
-#   filter(content.type == "application/pdf" | content.type == "unspecified",
-#          !duplicated(doi)) %>%
-#   select(doi, URL) %>%
-#   rename(pdf_url = URL)
-# 
-# metadata_2021_df <- metadata_2021_df %>%
-#   left_join(linklist, by = "doi")
 
 
 # wrap GET in safely in order to keep a failed search from terminating the loop
-safeget <- safely(GET)
+safeslowget <- slowly(safely(GET), rate_delay(2))
 
-my_pdfs <- orcid_cr_oa %>%
-  filter(!is.na(url_for_pdf)) %>%
-  slice(1:20) %>%
+# create a new directory called minedpdfs, if one doesn't already exist
+if(!dir.exists("minedpdfs")) {dir.create("./minedpdfs")}
+
+# it's best to do this on campus since most of them will be paywalled
+# even ones you have subscriptions to won't necessarily get picked up
+# if the file size is 10KB or less, it didn't work
+# see also the fulltext package in R
+my_pdfs <- orcid_cr %>%
+  filter(!is.na(pdf_url)) %>%
   pmap(function(...) {
     current <- tibble(...)
-    print(current$url_for_pdf)
-    n <- safeget(current$url_for_pdf,
-                 add_headers(`Accept` = "application/pdf",
-                             `Content-Type` = "application/pdf",
-                             `X-Content-Type-Options` = "nosniff"),
-                 write_disk(paste0("./minedpdfs/", current$filename, ".pdf")))
+    print(current$pdf_url)
+    n <- safeslowget(current$pdf_url,
+                     add_headers(`Accept` = "application/pdf",
+                                 `Content-Type` = "application/pdf",
+                                 `X-Content-Type-Options` = "nosniff"),
+                     write_disk(paste0("./minedpdfs/", current$filename, ".pdf")))
     return(n)
-    Sys.sleep(0.5)
   })
-
-
-# if any of them don't work, you can try to replace the url_for_pdf variable with pdf_url
-# but in my experience these are comparable
-

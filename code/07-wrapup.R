@@ -1,29 +1,34 @@
-library(rorcid)
-library(httr)
-library(usethis)
-library(anytime)
-library(lubridate)
-library(janitor)
-library(glue)
+# load the required packages
 library(dplyr)
+library(tibble)
+library(tidyr)
 library(purrr)
-library(stringr)
 library(readr)
 library(jsonlite)
+library(lubridate)
 library(ggplot2)
+library(httr)
 library(forcats)
+library(usethis)
+library(anytime)
+library(janitor)
+library(glue)
+library(rorcid)
 library(rcrossref)
 library(roadoi)
 library(inops)
-library(tidyr)
-library(tibble)
+
+# remove all objects from the environment
+# to start with a clean slate
+rm(list = ls())
+
 
 orcid_cr_sherpa <- read_csv("./data/results/orcid_cr_sherpa.csv")
 
 
 # look at the accepted versions a single person can deposit without paying a fee
 
-orcid_ids <- "0000-0003-0802-6881"
+orcid_ids <- orcid_cr_sherpa$orcid_identifier[1]
 
 single_user_table <- orcid_cr_sherpa %>%
   filter(orcid_identifier %in% orcid_ids,

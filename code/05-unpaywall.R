@@ -4,6 +4,7 @@ library(tibble)
 library(tidyr)
 library(purrr)
 library(readr)
+library(stringr)
 library(jsonlite)
 library(lubridate)
 library(ggplot2)
@@ -60,7 +61,11 @@ warnings()
 # is_empty will return a TRUE or FALSE if there were no results, and the _lgl
 # part of map will return that TRUE or FALSE into a single vector, which can be used 
 # to subset the crossref/orcid merge
-### AGAIN, DELETE THE [1:20, ] WHEN YOU ARE RUNNING THIS AFTER CLASS ###
+
+#################################################################
+### DELETE THE [1:20, ] WHEN YOU ARE RUNNING THIS AFTER CLASS ###
+#################################################################
+
 dois_not_found <- orcid_cr_merge[1:20, ] %>%
   filter(!map_lgl(dois_oa, is_empty))
 

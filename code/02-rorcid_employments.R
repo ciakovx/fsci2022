@@ -4,6 +4,7 @@ library(tibble)
 library(tidyr)
 library(purrr)
 library(readr)
+library(stringr)
 library(jsonlite)
 library(lubridate)
 library(ggplot2)
@@ -74,17 +75,18 @@ my_orcids_data <- my_orcids %>%
   map_dfr(., as_tibble) %>%
   janitor::clean_names()
 
+write_csv(my_orcids_data, "./data/processed/my_orcids_data.csv")
 
 
 # get employment data -----------------------------------------------------
 
 # get the employments from the orcid_identifier_path column
 
-# for the purposes of this class, we will only be retrieving data for the first 20 people.
+# for the purposes of this class, we will only be retrieving data for the first 50 people.
 
 ###################################################
 ## When you run this on your own after the class,##
-############### REMOVE THE [1:20] #################
+############### REMOVE THE [1:50] #################
 ###################################################
 
 # be patient, this may take a while

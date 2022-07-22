@@ -4,6 +4,7 @@ library(tibble)
 library(tidyr)
 library(purrr)
 library(readr)
+library(stringr)
 library(jsonlite)
 library(lubridate)
 library(ggplot2)
@@ -33,8 +34,8 @@ orcid_cr <- read_csv("./data/results/orcid_cr_merge.csv",
 # https://v2.sherpa.ac.uk/cgi/users/home
 sherpa_key <- "PASTE YOUR SHERPA ROMEO KEY HERE"
 
-# create safe version of GET 
-safeget <- safely(GET)
+# create safe, slow version of GET 
+safeslowget <- slowly(safely(GET), rate_delay(2))
 
 # create a single column for issns
 orcid_cr_lookup <- orcid_cr %>%
@@ -44,7 +45,7 @@ orcid_cr_lookup <- orcid_cr %>%
 
 
 # construct urls to send in API call
-api_url <- paste0("https://v2.sherpa.ac.uk/cgi/retrieve?item-type=publication&format=Json&limit=1&offset=0&order=-id&filter=%5B%5B%22issn%22%2C%22equals%22%2C%22",
+api_url <- paste0("https://v2.sherpa.ac.uk/cgi/retrieve?item-type=publication&format=Json&identifier=%22%2C%22",
                   orcid_cr_lookup$issn_use,
                   "%22%5D%5D&",
                   "api-key=",
@@ -70,13 +71,19 @@ romeo_response <- romeo_request %>%
   map(., pluck, "items", 1) 
 
 # create a data frame with some pertinent datapoints
+###################################################
+## When you run this on your own after the class,##
+############### REMOVE THE [1:10] #################
+### after orcid_cr_lookup$issn_use[1:10] ##########
+### and after call = api_url[1:10] ################
+###################################################
 romeo_df <- romeo_response %>% {
-  tibble(issn_use = orcid_cr_lookup$issn_use,
+  tibble(issn_use = orcid_cr_lookup$issn_use[1:10],
     title = map_chr(., pluck, "title", 1, "title", .default = NA_character_),
     sherpa_id = map_chr(., pluck, "system_metadata", "id", .default = NA_character_),
     publisher = map_chr(., pluck, "publishers", 1, "publisher", "name", 1, "name", .default = NA_character_),
     publisher_policy = map(., pluck, "publisher_policy"),
-    call = api_url
+    call = api_url[1:10]
   )
 }
 

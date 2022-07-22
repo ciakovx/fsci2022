@@ -7,6 +7,7 @@ install.packages('tibble')
 install.packages('tidyr')
 install.packages('purrr')
 install.packages('readr')
+install.packages('stringr')
 install.packages('jsonlite')
 install.packages('lubridate')
 install.packages('ggplot2')
@@ -29,6 +30,7 @@ library(tibble)
 library(tidyr)
 library(purrr)
 library(readr)
+library(stringr)
 library(jsonlite)
 library(lubridate)
 library(ggplot2)
@@ -91,7 +93,7 @@ usethis::edit_r_environ()
 # replace 'my-token' with the access_token you just copied. 
 # Then press enter to create a new line.
 # while we are here, we'll add in our rcrossref credentials
-# type crossref_email=name@example.com, using your own email address.
+# type crossref_email="name@example.com", using your own email address.
 # press enter to create a new line, and leave it blank. 
 # Press Ctrl + S (Mac: Cmd + S) to save this information to your R environment and close the window. You won't see anything happen here because it is just saving the page.
 # Click Session > Restart R. Your token should now be saved to your R environment. 
