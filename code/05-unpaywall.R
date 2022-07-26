@@ -67,7 +67,7 @@ warnings()
 #################################################################
 
 dois_not_found <- orcid_cr_merge[1:20, ] %>%
-  filter(!map_lgl(dois_oa, is_empty))
+  filter(map_lgl(dois_oa, is_empty))
 
 # loop through (map) the returned results, extract (flatten) the 
 # data frame, and bind (_dfr) the rows together
@@ -108,6 +108,23 @@ orcid_cr_oa_merge <- orcid_cr_merge %>%
 write_csv(orcid_cr_oa_merge, "./data/results/orcid_cr_oa_merge.csv")  
 
 
+# exploring the data ------------------------------------------------------
 
+#plot number of OA vs non-OA
+dois_oa_df %>%
+  ggplot(., aes(x = is_oa)) +
+  geom_histogram(stat = "count") 
+
+# create color palette
+oa_colors <- c("bronze" = "#D55E00",
+               "closed" = "#000000",
+               "gold" = "#F0E442",
+               "green" = "#009E73", 
+               "hybrid" = "#E69F00")
+
+# plot OA status histogram
+dois_oa_df %>%
+  ggplot(., aes(x = oa_status)) +
+  geom_histogram(stat = "count", fill = oa_colors)
 
 

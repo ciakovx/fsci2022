@@ -45,11 +45,10 @@ orcid_cr_lookup <- orcid_cr %>%
 
 
 # construct urls to send in API call
-api_url <- paste0("https://v2.sherpa.ac.uk/cgi/retrieve?item-type=publication&format=Json&identifier=%22%2C%22",
-                  orcid_cr_lookup$issn_use,
-                  "%22%5D%5D&",
-                  "api-key=",
-                  sherpa_key)
+api_url <- paste0("https://v2.sherpa.ac.uk/cgi/retrieve_by_id?item-type=publication&api-key=",
+                  sherpa_key,
+                  "&format=Json&identifier=",
+                  orcid_cr_lookup$issn_use)
 
 ###################################################
 ## When you run this on your own after the class,##
@@ -59,9 +58,8 @@ api_url <- paste0("https://v2.sherpa.ac.uk/cgi/retrieve?item-type=publication&fo
 # send the request
 romeo_request <- map(api_url[1:10], function(z) {
   print(z)
-  o <- safeget(z)
+  o <- safeslowget(z)
   return(o)
-  Sys.sleep(0.5)
 })
 
 # parse the results
