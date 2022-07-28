@@ -39,7 +39,7 @@ myrefs <- c("Frosio, G. F. (2014). Open Access Publishing: A Literature Review. 
 my_query <- map(myrefs, function(z) {
   print(z)
   o <- cr_works(flq = c(query.bibliographic = z),
-           limit = 1) %>%
+                limit = 2) %>%
     pluck("data")
   return(o)
 })
@@ -47,7 +47,13 @@ my_query <- map(myrefs, function(z) {
 # flatten it into a data frame
 my_dat <- my_query %>%
   map_dfr(., bind_rows) %>%
-  select(score, everything())
+  select(score, title, everything())
+
+# remove invalid rows
+# notice that row 13 is a book review, but row 14 is the book
+my_dat_clean <- my_dat %>%
+  slice(-c(2, 4, 6, 8, 9, 10, 12, 13, 15))  
+
 
 # write to CSV
-write_csv(my_dat, "./data/results/refs.csv")
+write_csv(my_dat_clean, "./data/results/refs.csv")
